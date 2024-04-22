@@ -1,19 +1,19 @@
 var express = require("express");
 var app = express();
 
-app.get("/", function (req, res) {
-  res.send('{ "response": "Hello, Welcome to Valaxy" }');
+app.get("/home", (req, res) => {
+  res.send('{ "response": "Hi, welcome to App" }');
 });
 
-app.get("/will", function (req, res) {
+app.get("/status", (req, res) => {
   res.send('{ "response": "Hello World" }');
 });
-app.get("/ready", function (req, res) {
-  res.send('{ "response": " Great!, It works!" }');
+app.get("/check", (req, res) => {
+  res.send('{ "response": " Everything is fine!" }');
 });
 
-//listen to port 3000 by default
-app.listen(process.env.PORT || 3000, function () {
+app.listen(3000, () => {
+  // use process.env.PORT db connect
   console.log("App listening on port 3000!");
 });
 
