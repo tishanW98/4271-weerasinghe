@@ -1,7 +1,6 @@
 pipeline {
     agent any 
-   
-    
+
     stages { 
         stage('SCM Checkout') {
             steps {
@@ -10,28 +9,32 @@ pipeline {
                 }
             }
         }
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {  
-                bat 'docker build -t shakilat/backend-api-basic:%BUILD_NUMBER% .'
+                bat 'docker build -t shakilat/backend-api:%BUILD_NUMBER% .'
             }
         }
-        stage('Login to DockerHub') {
+        stage('Cleanup Old Container') {
             steps {
-                withCredentials([string(credentialsId: 'shakilatpassid', variable: 'shakilatpass')]) {
-   
-               bat'docker login -u shakilat -p ${shakilatpass}'
-                }
+                bat '''
+                    docker rm -f container-bapi || true
+                '''
             }
         }
-        stage('Push Image') {
+        stage('Run Image') {
             steps {
-                bat 'docker push shakilat/backend-api-basic:%BUILD_NUMBER%'
+                bat '''
+                    docker run -d --name container-bapi -p 3001:3001 shakilat/backend-api:%BUILD_NUMBER%
+                '''
             }
         }
-    }
-    post {
-        always {
-            bat 'docker logout'
+        stage('Verify') {
+            steps {
+                bat '''
+                    docker ps
+                    docker logs container-bapi
+                '''
+            }
         }
     }
 }
